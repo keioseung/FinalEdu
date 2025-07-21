@@ -454,20 +454,59 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                 </div>
                 <div className="flex items-end gap-2 h-32">
                   {uniqueChartData.map((data, index) => {
-                    const percent = Math.round((data.ai_info / maxAI) * 100);
-                    const isFull = data.ai_info === maxAI;
+                    const barMaxHeight = 128; // h-32 = 128px
+                    // AI bar
+                    const aiHeight = Math.max((data.ai_info / maxAI) * barMaxHeight, data.ai_info > 0 ? 4 : 0);
+                    // 용어 bar
+                    const termsHeight = Math.max((data.terms / maxTerms) * barMaxHeight, data.terms > 0 ? 4 : 0);
+                    // 퀴즈 bar
+                    const quizHeight = Math.max((data.quiz_score / maxQuiz) * barMaxHeight, data.quiz_score > 0 ? 4 : 0);
+                    const isFullAI = data.ai_info === maxAI;
+                    const isFullTerms = data.terms === maxTerms;
+                    const isFullQuiz = data.quiz_score === maxQuiz;
                     return (
-                      <div key={index} className="flex flex-col items-center w-8">
-                        <div className="relative w-full">
+                      <div key={index} className="flex flex-col items-end w-8">
+                        {/* AI bar */}
+                        <div className="relative w-full mb-1">
                           <div
                             className={
-                              isFull
+                              isFullAI
                                 ? "bg-gradient-to-t from-blue-700 to-blue-400 shadow-lg animate-pulse rounded-t-sm transition-all duration-500"
                                 : "bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-sm transition-all duration-500 hover:from-blue-400 hover:to-blue-300"
                             }
                             style={{
-                              height: `${percent}%`,
+                              height: aiHeight,
                               minHeight: data.ai_info > 0 ? 4 : 0,
+                              width: "100%"
+                            }}
+                          />
+                        </div>
+                        {/* 용어 bar */}
+                        <div className="relative w-full mb-1">
+                          <div
+                            className={
+                              isFullTerms
+                                ? "bg-gradient-to-t from-purple-700 to-pink-400 shadow-lg animate-pulse rounded-t-sm transition-all duration-500"
+                                : "bg-gradient-to-t from-purple-500 to-purple-400 rounded-t-sm transition-all duration-500 hover:from-purple-400 hover:to-purple-300"
+                            }
+                            style={{
+                              height: termsHeight,
+                              minHeight: data.terms > 0 ? 4 : 0,
+                              width: "100%"
+                            }}
+                          />
+                        </div>
+                        {/* 퀴즈 bar */}
+                        <div className="relative w-full">
+                          <div
+                            className={
+                              isFullQuiz
+                                ? "bg-gradient-to-t from-green-700 to-green-400 shadow-lg animate-pulse rounded-t-sm transition-all duration-500"
+                                : "bg-gradient-to-t from-green-500 to-green-400 rounded-t-sm transition-all duration-500 hover:from-green-400 hover:to-green-300"
+                            }
+                            style={{
+                              height: quizHeight,
+                              minHeight: data.quiz_score > 0 ? 4 : 0,
                               width: "100%"
                             }}
                           />

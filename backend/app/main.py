@@ -5,9 +5,15 @@ from .api import ai_info, quiz, prompt, base_content, term, auth
 
 app = FastAPI()
 
+origins = [
+    "https://simple-production-6bc9.up.railway.app",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

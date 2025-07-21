@@ -74,6 +74,9 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
     enabled: !!sessionId && !!periodDates.start && !!periodDates.end,
   })
 
+  // 진단용: 실제로 받아오는 기간별 학습 데이터 콘솔 출력
+  console.log('기간별 학습 추이 데이터', periodStats?.period_data);
+
   // 날짜 변경 핸들러 - 상위 컴포넌트에 알림
   const handleDateChange = (date: string) => {
     console.log('진행률 탭 - 날짜 변경:', date)

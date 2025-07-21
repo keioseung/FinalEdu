@@ -350,9 +350,7 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
             </div>
             <div className="flex justify-between items-center">
               <span className="text-white/70 text-sm">총 정보 수</span>
-              <span className="text-white/50 text-sm">
-                {stats?.total_ai_info_available || 0}
-              </span>
+              <span className="text-blue-400 font-bold text-base">3</span>
             </div>
           </div>
         </motion.div>
@@ -386,9 +384,7 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
             </div>
             <div className="flex justify-between items-center">
               <span className="text-white/70 text-sm">총 용어 수</span>
-              <span className="text-white/50 text-sm">
-                {stats?.total_terms_available || 0}
-              </span>
+              <span className="text-purple-400 font-bold text-base">60</span>
             </div>
           </div>
         </motion.div>
@@ -452,48 +448,50 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                     최대: {maxAI}개
                   </span>
                 </div>
-                <div className="flex flex-row items-end h-32">
-                  {/* y축 라벨 */}
-                  <div className="flex flex-col justify-between h-full mr-2 text-xs text-white/40 select-none" style={{height: 128}}>
-                    {[100, 80, 60, 40, 20, 0].map(v => (
-                      <div key={v} style={{height: 128/5}}>{v}%</div>
-                    ))}
-                  </div>
-                  {/* bar + 날짜 */}
-                  <div className="flex items-end gap-2 h-32">
-                    {uniqueChartData.map((data, index) => {
-                      const barMaxHeight = 128;
-                      const aiHeight = Math.max((data.ai_info / maxAI) * barMaxHeight, data.ai_info > 0 ? 4 : 0);
-                      const isFullAI = data.ai_info === maxAI;
-                      const percent = Math.round((data.ai_info / maxAI) * 100);
-                      return (
-                        <div key={index} className="flex flex-col items-center w-8">
-                          <div className="relative w-full">
-                            <div
-                              className={
-                                isFullAI
-                                  ? "bg-gradient-to-t from-blue-700 to-blue-400 shadow-lg animate-pulse rounded-t-sm transition-all duration-500"
-                                  : "bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-sm transition-all duration-500 hover:from-blue-400 hover:to-blue-300"
-                              }
-                              style={{
-                                height: aiHeight,
-                                minHeight: data.ai_info > 0 ? 4 : 0,
-                                width: "100%"
-                              }}
-                            />
-                            {/* bar 위에 % */}
-                            {data.ai_info > 0 && (
-                              <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-blue-200 drop-shadow">
-                                {percent}%
-                              </div>
-                            )}
+                <div className="overflow-x-auto">
+                  <div className="flex flex-row items-end h-32" style={{ minWidth: `${uniqueChartData.length * 40}px` }}>
+                    {/* y축 라벨 */}
+                    <div className="flex flex-col justify-between h-full mr-2 text-xs text-white/40 select-none" style={{height: 128}}>
+                      {[100, 80, 60, 40, 20, 0].map(v => (
+                        <div key={v} style={{height: 128/5}}>{v}%</div>
+                      ))}
+                    </div>
+                    {/* bar + 날짜 */}
+                    <div className="flex items-end gap-2 h-32">
+                      {uniqueChartData.map((data, index) => {
+                        const barMaxHeight = 128;
+                        const aiHeight = Math.max((data.ai_info / maxAI) * barMaxHeight, data.ai_info > 0 ? 4 : 0);
+                        const isFullAI = data.ai_info === maxAI;
+                        const percent = Math.round((data.ai_info / maxAI) * 100);
+                        return (
+                          <div key={index} className="flex flex-col items-center w-8">
+                            <div className="relative w-full">
+                              <div
+                                className={
+                                  isFullAI
+                                    ? "bg-gradient-to-t from-blue-700 to-blue-400 shadow-lg animate-pulse rounded-t-sm transition-all duration-500"
+                                    : "bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-sm transition-all duration-500 hover:from-blue-400 hover:to-blue-300"
+                                }
+                                style={{
+                                  height: aiHeight,
+                                  minHeight: data.ai_info > 0 ? 4 : 0,
+                                  width: "100%"
+                                }}
+                              />
+                              {/* bar 위에 % */}
+                              {data.ai_info > 0 && (
+                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-blue-200 drop-shadow">
+                                  {percent}%
+                                </div>
+                              )}
+                            </div>
+                            <div className="text-xs text-white/50 mt-2 text-center" style={{fontSize:'11px'}}>
+                              {new Date(data.date).getDate()}
+                            </div>
                           </div>
-                          <div className="text-xs text-white/50 mt-2 text-center">
-                            {new Date(data.date).getDate()}
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -509,48 +507,50 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                     최대: {maxTerms}개
                   </span>
                 </div>
-                <div className="flex flex-row items-end h-32">
-                  {/* y축 라벨 */}
-                  <div className="flex flex-col justify-between h-full mr-2 text-xs text-white/40 select-none" style={{height: 128}}>
-                    {[100, 80, 60, 40, 20, 0].map(v => (
-                      <div key={v} style={{height: 128/5}}>{v}%</div>
-                    ))}
-                  </div>
-                  {/* bar + 날짜 */}
-                  <div className="flex items-end gap-2 h-32">
-                    {uniqueChartData.map((data, index) => {
-                      const barMaxHeight = 128;
-                      const termsHeight = Math.max((data.terms / maxTerms) * barMaxHeight, data.terms > 0 ? 4 : 0);
-                      const isFullTerms = data.terms === maxTerms;
-                      const percent = Math.round((data.terms / maxTerms) * 100);
-                      return (
-                        <div key={index} className="flex flex-col items-center w-8">
-                          <div className="relative w-full">
-                            <div
-                              className={
-                                isFullTerms
-                                  ? "bg-gradient-to-t from-purple-700 to-pink-400 shadow-lg animate-pulse rounded-t-sm transition-all duration-500"
-                                  : "bg-gradient-to-t from-purple-500 to-purple-400 rounded-t-sm transition-all duration-500 hover:from-purple-400 hover:to-purple-300"
-                              }
-                              style={{
-                                height: termsHeight,
-                                minHeight: data.terms > 0 ? 4 : 0,
-                                width: "100%"
-                              }}
-                            />
-                            {/* bar 위에 % */}
-                            {data.terms > 0 && (
-                              <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-pink-200 drop-shadow">
-                                {percent}%
-                              </div>
-                            )}
+                <div className="overflow-x-auto">
+                  <div className="flex flex-row items-end h-32" style={{ minWidth: `${uniqueChartData.length * 40}px` }}>
+                    {/* y축 라벨 */}
+                    <div className="flex flex-col justify-between h-full mr-2 text-xs text-white/40 select-none" style={{height: 128}}>
+                      {[100, 80, 60, 40, 20, 0].map(v => (
+                        <div key={v} style={{height: 128/5}}>{v}%</div>
+                      ))}
+                    </div>
+                    {/* bar + 날짜 */}
+                    <div className="flex items-end gap-2 h-32">
+                      {uniqueChartData.map((data, index) => {
+                        const barMaxHeight = 128;
+                        const termsHeight = Math.max((data.terms / maxTerms) * barMaxHeight, data.terms > 0 ? 4 : 0);
+                        const isFullTerms = data.terms === maxTerms;
+                        const percent = Math.round((data.terms / maxTerms) * 100);
+                        return (
+                          <div key={index} className="flex flex-col items-center w-8">
+                            <div className="relative w-full">
+                              <div
+                                className={
+                                  isFullTerms
+                                    ? "bg-gradient-to-t from-purple-700 to-pink-400 shadow-lg animate-pulse rounded-t-sm transition-all duration-500"
+                                    : "bg-gradient-to-t from-purple-500 to-purple-400 rounded-t-sm transition-all duration-500 hover:from-purple-400 hover:to-purple-300"
+                                }
+                                style={{
+                                  height: termsHeight,
+                                  minHeight: data.terms > 0 ? 4 : 0,
+                                  width: "100%"
+                                }}
+                              />
+                              {/* bar 위에 % */}
+                              {data.terms > 0 && (
+                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-pink-200 drop-shadow">
+                                  {percent}%
+                                </div>
+                              )}
+                            </div>
+                            <div className="text-xs text-white/50 mt-2 text-center" style={{fontSize:'11px'}}>
+                              {new Date(data.date).getDate()}
+                            </div>
                           </div>
-                          <div className="text-xs text-white/50 mt-2 text-center">
-                            {new Date(data.date).getDate()}
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -566,48 +566,50 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                     최대: {maxQuiz}%
                   </span>
                 </div>
-                <div className="flex flex-row items-end h-32">
-                  {/* y축 라벨 */}
-                  <div className="flex flex-col justify-between h-full mr-2 text-xs text-white/40 select-none" style={{height: 128}}>
-                    {[100, 80, 60, 40, 20, 0].map(v => (
-                      <div key={v} style={{height: 128/5}}>{v}%</div>
-                    ))}
-                  </div>
-                  {/* bar + 날짜 */}
-                  <div className="flex items-end gap-2 h-32">
-                    {uniqueChartData.map((data, index) => {
-                      const barMaxHeight = 128;
-                      const quizHeight = Math.max((data.quiz_score / maxQuiz) * barMaxHeight, data.quiz_score > 0 ? 4 : 0);
-                      const isFullQuiz = data.quiz_score === maxQuiz;
-                      const percent = Math.round((data.quiz_score / maxQuiz) * 100);
-                      return (
-                        <div key={index} className="flex flex-col items-center w-8">
-                          <div className="relative w-full">
-                            <div
-                              className={
-                                isFullQuiz
-                                  ? "bg-gradient-to-t from-green-700 to-green-400 shadow-lg animate-pulse rounded-t-sm transition-all duration-500"
-                                  : "bg-gradient-to-t from-green-500 to-green-400 rounded-t-sm transition-all duration-500 hover:from-green-400 hover:to-green-300"
-                              }
-                              style={{
-                                height: quizHeight,
-                                minHeight: data.quiz_score > 0 ? 4 : 0,
-                                width: "100%"
-                              }}
-                            />
-                            {/* bar 위에 % */}
-                            {data.quiz_score > 0 && (
-                              <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-green-200 drop-shadow">
-                                {percent}%
-                              </div>
-                            )}
+                <div className="overflow-x-auto">
+                  <div className="flex flex-row items-end h-32" style={{ minWidth: `${uniqueChartData.length * 40}px` }}>
+                    {/* y축 라벨 */}
+                    <div className="flex flex-col justify-between h-full mr-2 text-xs text-white/40 select-none" style={{height: 128}}>
+                      {[100, 80, 60, 40, 20, 0].map(v => (
+                        <div key={v} style={{height: 128/5}}>{v}%</div>
+                      ))}
+                    </div>
+                    {/* bar + 날짜 */}
+                    <div className="flex items-end gap-2 h-32">
+                      {uniqueChartData.map((data, index) => {
+                        const barMaxHeight = 128;
+                        const quizHeight = Math.max((data.quiz_score / maxQuiz) * barMaxHeight, data.quiz_score > 0 ? 4 : 0);
+                        const isFullQuiz = data.quiz_score === maxQuiz;
+                        const percent = Math.round((data.quiz_score / maxQuiz) * 100);
+                        return (
+                          <div key={index} className="flex flex-col items-center w-8">
+                            <div className="relative w-full">
+                              <div
+                                className={
+                                  isFullQuiz
+                                    ? "bg-gradient-to-t from-green-700 to-green-400 shadow-lg animate-pulse rounded-t-sm transition-all duration-500"
+                                    : "bg-gradient-to-t from-green-500 to-green-400 rounded-t-sm transition-all duration-500 hover:from-green-400 hover:to-green-300"
+                                }
+                                style={{
+                                  height: quizHeight,
+                                  minHeight: data.quiz_score > 0 ? 4 : 0,
+                                  width: "100%"
+                                }}
+                              />
+                              {/* bar 위에 % */}
+                              {data.quiz_score > 0 && (
+                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-green-200 drop-shadow">
+                                  {percent}%
+                                </div>
+                              )}
+                            </div>
+                            <div className="text-xs text-white/50 mt-2 text-center" style={{fontSize:'11px'}}>
+                              {new Date(data.date).getDate()}
+                            </div>
                           </div>
-                          <div className="text-xs text-white/50 mt-2 text-center">
-                            {new Date(data.date).getDate()}
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>

@@ -417,79 +417,71 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
         </motion.div>
       </div>
 
-      {/* 기간별 추이 그래프 - Progress Journey 스타일로 완전 리뉴얼 */}
+      {/* 기간별 추이 그래프 - 혼합형(막대+선) 그래프 */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-white font-semibold text-lg">기간별 학습 여정</h3>
+          <h3 className="text-white font-semibold text-lg">기간별 학습 추이</h3>
           <div className="text-white/60 text-sm">
             {periodStats?.start_date} ~ {periodStats?.end_date}
           </div>
         </div>
         <div className="glass rounded-2xl p-6 overflow-x-auto scrollbar-thin scrollbar-thumb-blue-400/30 scrollbar-track-transparent">
           {uniqueChartData.length > 0 ? (
-            <div className="relative flex items-end gap-12 h-64 min-w-[600px] w-fit px-6" style={{scrollSnapType:'x mandatory'}}>
-              {/* SVG 곡선 라인 */}
-              <svg className="absolute left-0 top-0 w-full h-48 pointer-events-none z-0" style={{minWidth: uniqueChartData.length * 80}}>
+            <div className="relative flex items-end h-72 min-w-[600px] w-fit px-6">
+              {/* y축 라벨 */}
+              <div className="absolute left-0 top-0 h-full flex flex-col justify-between z-10 -ml-8 text-xs text-white/40 select-none pointer-events-none">
+                {[100,80,60,40,20,0].map(v=>(<div key={v} style={{height:'60px'}}>{v}%</div>))}
+              </div>
+              {/* SVG 선(line) */}
+              <svg className="absolute left-0 top-0 w-full h-64 pointer-events-none z-0" style={{minWidth: uniqueChartData.length * 64}}>
                 <polyline
                   fill="none"
-                  stroke="#64748b"
-                  strokeWidth="4"
+                  stroke="#34d399"
+                  strokeWidth="3"
                   strokeLinejoin="round"
-                  points={uniqueChartData.map((_, idx) => `${40 + idx*80},180`).join(' ')}
-                  style={{opacity:0.3}}
+                  points={uniqueChartData.map((d, idx) => `${56 + idx*64},${192-(d.quiz_score/100)*192}`).join(' ')}
+                  style={{filter:'drop-shadow(0 2px 8px #34d39988)'}}
                 />
               </svg>
+              {/* 막대(bar) + 선(circle) */}
               {uniqueChartData.map((data, idx) => {
                 const isToday = data.date === new Date().toISOString().split('T')[0];
-                const aiRatio = data.ai_info / maxAI;
-                const termsRatio = data.terms / maxTerms;
-                const quizRatio = data.quiz_score / maxQuiz;
-                const totalRatio = Math.min(aiRatio + termsRatio + quizRatio, 1);
-                const tooltip = `AI: ${data.ai_info}/${maxAI}\n용어: ${data.terms}/${maxTerms}\n퀴즈: ${data.quiz_score}%`;
-                // 아이콘/이모지
-                const aiIcon = '🤖';
-                const termsIcon = '📚';
-                const quizIcon = '📝';
+                const totalLearned = (data.ai_info + data.terms);
+                const barPercent = Math.min((totalLearned/63)*100, 100);
+                const quizPercent = Math.min(data.quiz_score, 100);
+                const barHeight = (barPercent/100)*192;
+                const lineY = 192-(quizPercent/100)*192;
                 return (
-                  <div key={idx} className="flex flex-col items-center w-20 relative z-10" style={{scrollSnapAlign: isToday ? 'center' : 'none'}}>
-                    {/* 미니 bar + 아이콘 */}
-                    <div className="flex flex-col gap-1 mb-2">
-                      <div className="flex items-center gap-1 justify-center">
-                        <span className="text-blue-400 text-lg">{aiIcon}</span>
-                        <div className="w-8 h-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-300" style={{width:`${aiRatio*32}px`,opacity:aiRatio>0?1:0.2}}></div>
-                        <span className="text-xs text-blue-200 font-bold ml-1">{data.ai_info}</span>
-                      </div>
-                      <div className="flex items-center gap-1 justify-center">
-                        <span className="text-purple-400 text-lg">{termsIcon}</span>
-                        <div className="w-8 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-300" style={{width:`${termsRatio*32}px`,opacity:termsRatio>0?1:0.2}}></div>
-                        <span className="text-xs text-pink-200 font-bold ml-1">{data.terms}</span>
-                      </div>
-                      <div className="flex items-center gap-1 justify-center">
-                        <span className="text-green-400 text-lg">{quizIcon}</span>
-                        <div className="w-8 h-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-300" style={{width:`${quizRatio*32}px`,opacity:quizRatio>0?1:0.2}}></div>
-                        <span className="text-xs text-emerald-200 font-bold ml-1">{data.quiz_score}%</span>
+                  <div key={idx} className="flex flex-col items-center w-16 relative z-10 group">
+                    {/* bar */}
+                    <div className="relative flex flex-col items-center justify-end h-48 w-8">
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: barHeight }}
+                        transition={{ duration: 0.7, type: 'spring' }}
+                        className={`w-8 rounded-t-xl shadow-lg bg-gradient-to-t from-blue-500 to-purple-400 ${isToday ? 'ring-4 ring-yellow-300' : ''}`}
+                        style={{ height: barHeight }}
+                      />
+                      {/* bar 위에 % */}
+                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-xs font-bold text-blue-100 drop-shadow-lg">
+                        {Math.round(barPercent)}%
                       </div>
                     </div>
-                    {/* 원(circle) 노드 */}
-                    <div className="relative flex flex-col items-center">
-                      <motion.div
-                        initial={{ scale: 0.7, boxShadow: '0 0 0 0 rgba(0,0,0,0)' }}
-                        animate={{ scale: isToday ? 1.2 : 1, boxShadow: isToday ? '0 0 24px 8px #fde047' : '0 2px 8px 0 #64748b55' }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                        className={`w-12 h-12 rounded-full border-4 flex items-center justify-center font-extrabold text-lg bg-gradient-to-br from-slate-800 to-slate-700 border-white/30 ${isToday ? 'ring-4 ring-yellow-300 animate-pulse' : ''} shadow-xl cursor-pointer`}
-                        tabIndex={0}
-                        title={tooltip}
-                      >
-                        {isToday ? '🔥' : '⭐'}
-                      </motion.div>
-                      {/* 툴팁 */}
-                      <div className="absolute left-1/2 -translate-x-1/2 -top-20 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-opacity z-20 w-40 bg-black/90 text-white text-xs rounded-lg px-3 py-2 shadow-xl whitespace-pre text-center">
-                        {tooltip}
-                      </div>
-                      {/* bar 위에 총합/비율 */}
-                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-sm font-bold text-white drop-shadow-lg">
-                        {Math.round(totalRatio * 100)}%
-                      </div>
+                    {/* 선(circle) + 툴팁 */}
+                    <svg className="absolute top-0 left-0 w-full h-48 pointer-events-none z-20" style={{minWidth:'100%'}}>
+                      <circle
+                        cx="16"
+                        cy={lineY}
+                        r={isToday ? 8 : 6}
+                        fill={isToday ? '#facc15' : '#34d399'}
+                        stroke="#fff"
+                        strokeWidth={isToday ? 4 : 2}
+                        style={{filter:isToday?'drop-shadow(0 0 12px #fde047)':'drop-shadow(0 2px 8px #34d39988)'}}
+                      />
+                    </svg>
+                    {/* 퀴즈 점수 툴팁 */}
+                    <div className="absolute left-1/2 -translate-x-1/2 -top-16 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-opacity z-30 w-32 bg-black/90 text-white text-xs rounded-lg px-3 py-2 shadow-xl whitespace-pre text-center">
+                      퀴즈 점수: {quizPercent}%
                     </div>
                     {/* 날짜 */}
                     <div className={`mt-3 text-xs font-bold ${isToday ? 'text-yellow-400' : 'text-white/80'} drop-shadow`}>{new Date(data.date).getDate()}</div>

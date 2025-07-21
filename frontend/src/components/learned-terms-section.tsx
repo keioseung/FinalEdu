@@ -386,17 +386,6 @@ function LearnedTermsSection({ sessionId }: LearnedTermsSectionProps) {
           </div>
         </div>
       )}
-      {/* 카드 4개(용어 카드 목록) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {filteredTerms.map((term, idx) => (
-          <div key={term.term} className="bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-xl p-4 border border-white/10 shadow">
-            <div className="font-bold text-lg text-white mb-2">{term.term}</div>
-            <div className="text-white/70 text-sm mb-2 line-clamp-3">{term.description}</div>
-            {/* 기타 카드 내부 UI ... */}
-          </div>
-        ))}
-      </div>
-
       {/* 현재 용어 표시 */}
       {currentTerm && (
         <motion.div

@@ -449,7 +449,7 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                           <div
                             className={
                               isFull
-                                ? "bg-gradient-to-t from-yellow-400 via-yellow-300 to-yellow-100 shadow-lg animate-pulse rounded-t-sm transition-all duration-500"
+                                ? "bg-gradient-to-t from-blue-700 to-blue-400 shadow-lg animate-pulse rounded-t-sm transition-all duration-500"
                                 : "bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-sm transition-all duration-500 hover:from-blue-400 hover:to-blue-300"
                             }
                             style={{
@@ -457,15 +457,6 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                               minHeight: 0
                             }}
                           />
-                          {data.ai_info > 0 && (
-                            <div className={
-                              `absolute -top-7 left-1/2 transform -translate-x-1/2 text-xs font-bold flex items-center gap-1 ` +
-                              (isFull ? "text-yellow-400" : "text-blue-400")
-                            }>
-                              {data.ai_info} ({percent}%)
-                              {isFull && <span className="ml-1">🏆</span>}
-                            </div>
-                          )}
                         </div>
                         <div className="text-xs text-white/50 mt-2 text-center">
                           {new Date(data.date).getDate()}

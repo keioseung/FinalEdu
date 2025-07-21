@@ -238,8 +238,119 @@ function LearnedTermsSection({ sessionId }: LearnedTermsSectionProps) {
         </div>
       </div>
 
+      {/* 원래 구조로 복구: 검색/필터/통계카드/날짜별 필터/카드4개 등 기존 순서로 */}
+      <div className="mb-6 space-y-4">
+        {/* 검색바 */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="용어나 설명으로 검색..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          />
+        </div>
+        {/* 필터 옵션 */}
+        <div className="flex flex-wrap gap-3 items-center">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+          >
+            <option value="date">최신순</option>
+            <option value="alphabet">가나다순</option>
+            <option value="length">길이순</option>
+          </select>
+          <button
+            onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+              showFavoritesOnly
+                ? 'bg-yellow-500/30 text-yellow-300 border border-yellow-500/50'
+                : 'bg-white/10 text-white/70 hover:bg-white/20'
+            }`}
+          >
+            <Star className="w-4 h-4" />
+            즐겨찾기만
+          </button>
+          <button
+            onClick={handleShuffle}
+            className="px-3 py-2 bg-purple-500/30 text-purple-300 rounded-lg hover:bg-purple-500/50 transition-all text-sm font-medium flex items-center gap-2"
+          >
+            <Shuffle className="w-4 h-4" />
+            랜덤
+          </button>
+          <button
+            onClick={exportTerms}
+            className="px-3 py-2 bg-green-500/30 text-green-300 rounded-lg hover:bg-green-500/50 transition-all text-sm font-medium flex items-center gap-2"
+          >
+            <Download className="w-4 h-4" />
+            내보내기
+          </button>
+        </div>
+      </div>
+      {/* 통계 카드 */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-xl rounded-xl p-4 border border-white/10"
+        >
+          <div className="flex items-center gap-3">
+            <BookOpen className="w-6 h-6 text-blue-300" />
+            <div>
+              <div className="text-white font-semibold">{filteredTerms.length}</div>
+              <div className="text-white/60 text-sm">표시된 용어</div>
+            </div>
+          </div>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 backdrop-blur-xl rounded-xl p-4 border border-white/10"
+        >
+          <div className="flex items-center gap-3">
+            <Star className="w-6 h-6 text-green-300" />
+            <div>
+              <div className="text-white font-semibold">{favoriteTerms.size}</div>
+              <div className="text-white/60 text-sm">즐겨찾기</div>
+            </div>
+          </div>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-xl rounded-xl p-4 border border-white/10"
+        >
+          <div className="flex items-center gap-3">
+            <Calendar className="w-6 h-6 text-purple-300" />
+            <div>
+              <div className="text-white font-semibold">{learnedData.learned_dates.length}</div>
+              <div className="text-white/60 text-sm">학습일수</div>
+            </div>
+          </div>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 backdrop-blur-xl rounded-xl p-4 border border-white/10"
+        >
+          <div className="flex items-center gap-3">
+            <TrendingUp className="w-6 h-6 text-yellow-300" />
+            <div>
+              <div className="text-white font-semibold">
+                {Math.round((filteredTerms.length / learnedData.total_terms) * 100)}%
+              </div>
+              <div className="text-white/60 text-sm">진행률</div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
       {/* 날짜별 필터 */}
-      {learnedData.learned_dates.length > 1 && (
+      {learnedData.learned_dates.length > 0 && (
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
             <Calendar className="w-5 h-5" />
@@ -275,30 +386,6 @@ function LearnedTermsSection({ sessionId }: LearnedTermsSectionProps) {
           </div>
         </div>
       )}
-
-      {/* 전체 용어 목록 */}
-      <div className="mb-6">
-        <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-          <BookOpen className="w-5 h-5" />
-          전체 용어 목록
-        </h3>
-        <div className="text-white/80 text-sm mb-2">총 {filteredTerms.length}개 용어</div>
-      </div>
-
-      {/* 검색 기능 */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-2">
-          <Search className="w-5 h-5 text-white/60" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder="용어나 설명으로 검색..."
-            className="flex-1 bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      </div>
-
       {/* 카드 4개(용어 카드 목록) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {filteredTerms.map((term, idx) => (

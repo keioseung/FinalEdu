@@ -74,8 +74,18 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
     enabled: !!sessionId && !!periodDates.start && !!periodDates.end,
   })
 
-  // 진단용: 실제로 받아오는 기간별 학습 데이터 콘솔 출력
-  console.log('기간별 학습 추이 데이터', periodStats?.period_data);
+  // 진단용: 실제로 받아오는 기간별 학습 데이터와 파라미터 콘솔 출력
+  console.log('periodStats API 파라미터', sessionId, periodDates.start, periodDates.end);
+  if (Array.isArray(periodStats?.period_data)) {
+    periodStats.period_data.forEach((d, i) => {
+      console.log(`Day ${i}:`, d.date, 'AI:', d.ai_info, 'Terms:', d.terms, 'Quiz:', d.quiz_score);
+      if ((d.ai_info === 0 || d.ai_info === undefined) && (d.terms === 0 || d.terms === undefined) && (d.quiz_score === 0 || d.quiz_score === undefined)) {
+        console.warn(`Day ${i} (${d.date}): 모든 값이 0이거나 undefined! DB 저장/조회/sessionId/날짜 문제 가능성 높음.`);
+      }
+    });
+  } else {
+    console.warn('periodStats?.period_data가 배열이 아님:', periodStats?.period_data);
+  }
 
   // 날짜 변경 핸들러 - 상위 컴포넌트에 알림
   const handleDateChange = (date: string) => {

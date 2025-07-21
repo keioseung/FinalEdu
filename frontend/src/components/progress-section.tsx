@@ -126,9 +126,10 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
     return acc
   }, []).sort((a: PeriodData, b: PeriodData) => new Date(a.date).getTime() - new Date(b.date).getTime())
   
-  const maxAI = Math.max(...uniqueChartData.map((d: PeriodData) => d.ai_info), 1)
-  const maxTerms = Math.max(...uniqueChartData.map((d: PeriodData) => d.terms), 1)
-  const maxQuiz = Math.max(...uniqueChartData.map((d: PeriodData) => d.quiz_score), 1)
+  // 최대값을 고정값으로 설정 (AI 정보: 3, 용어: 60, 퀴즈: 100)
+  const maxAI = 3;
+  const maxTerms = 60;
+  const maxQuiz = 100;
 
   return (
     <div className="space-y-8 relative">
@@ -448,7 +449,7 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                           className="bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-sm transition-all duration-500 hover:from-blue-400 hover:to-blue-300"
                           style={{ 
                             height: `${(data.ai_info / maxAI) * 100}%`,
-                            minHeight: '4px'
+                            minHeight: 0
                           }}
                         />
                         {data.ai_info > 0 && (
@@ -484,7 +485,7 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                           className="bg-gradient-to-t from-purple-500 to-purple-400 rounded-t-sm transition-all duration-500 hover:from-purple-400 hover:to-purple-300"
                           style={{ 
                             height: `${(data.terms / maxTerms) * 100}%`,
-                            minHeight: '4px'
+                            minHeight: 0
                           }}
                         />
                         {data.terms > 0 && (
@@ -520,7 +521,7 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                           className="bg-gradient-to-t from-green-500 to-green-400 rounded-t-sm transition-all duration-500 hover:from-green-400 hover:to-green-300"
                           style={{ 
                             height: `${(data.quiz_score / maxQuiz) * 100}%`,
-                            minHeight: '4px'
+                            minHeight: 0
                           }}
                         />
                         {data.quiz_score > 0 && (

@@ -226,7 +226,7 @@ function LearnedTermsSection({ sessionId }: LearnedTermsSectionProps) {
   const difficulty = currentTerm ? getDifficulty(currentTerm.term) : null
 
   return (
-    <div className="glass rounded-2xl p-6">
+    <>
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold text-white flex items-center gap-3">
@@ -400,9 +400,7 @@ function LearnedTermsSection({ sessionId }: LearnedTermsSectionProps) {
           </div>
         </div>
       )}
-    </div>
 
-      
       {/* 검색 및 필터 */}
       <div className="mb-6 space-y-4">
         {/* 검색바 */}
@@ -522,6 +520,7 @@ function LearnedTermsSection({ sessionId }: LearnedTermsSectionProps) {
           </div>
         </motion.div>
       </div>
+    </>
   )
 }
 

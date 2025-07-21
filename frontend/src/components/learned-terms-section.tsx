@@ -408,58 +408,17 @@ function LearnedTermsSection({ sessionId }: LearnedTermsSectionProps) {
           </div>
         </motion.div>
       </div>
-      {/* 용어 목록 */}
-      {filteredTerms.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-            <Target className="w-5 h-5" />
-            전체 용어 목록 ({filteredTerms.length}개)
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
-            {filteredTerms.map((term, index) => {
-              const termDifficulty = getDifficulty(term.term)
-              return (
-                <motion.div
-                  key={`${term.term}_${term.learned_date}_${term.info_index}`}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className={`p-3 rounded-lg cursor-pointer transition-all ${
-                    index === currentTermIndex
-                      ? 'bg-gradient-to-r from-blue-500/30 to-purple-500/30 border border-blue-400/50'
-                      : 'bg-white/5 hover:bg-white/10 border border-white/10'
-                  }`}
-                  onClick={() => setCurrentTermIndex(index)}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="font-semibold text-white text-sm">{term.term}</div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        toggleFavorite(term.term)
-                      }}
-                      className={`p-1 rounded ${
-                        favoriteTerms.has(term.term)
-                          ? 'text-yellow-400'
-                          : 'text-white/30 hover:text-yellow-400'
-                      }`}
-                    >
-                      <Star className="w-3 h-3" fill={favoriteTerms.has(term.term) ? 'currentColor' : 'none'} />
-                    </button>
-                  </div>
-                  <div className="text-white/60 text-xs line-clamp-2 mb-1">{term.description}</div>
-                  <div className="flex items-center justify-between">
-                    <div className={`text-xs px-1 py-0.5 rounded ${termDifficulty.bg} ${termDifficulty.color}`}>
-                      {termDifficulty.level}
-                    </div>
-                    <div className="text-white/40 text-xs">{term.learned_date}</div>
-                  </div>
-                </motion.div>
-              )
-            })}
+
+      {/* 6. 카드 4개(용어 카드) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {filteredTerms.map((term, idx) => (
+          <div key={term.term} className="bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-xl p-4 border border-white/10 shadow">
+            <div className="font-bold text-lg text-white mb-2">{term.term}</div>
+            <div className="text-white/70 text-sm mb-2 line-clamp-3">{term.description}</div>
+            {/* 기타 카드 내부 UI ... */}
           </div>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   )
 }

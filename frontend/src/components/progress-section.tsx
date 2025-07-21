@@ -426,117 +426,54 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
           </div>
         </div>
 
-        {/* 그래프 컨테이너 */}
-        <div className="glass rounded-2xl p-6">
+        {/* 고급스러운 그룹형 bar chart */}
+        <div className="glass rounded-2xl p-6 overflow-x-auto">
           {uniqueChartData.length > 0 ? (
-            <div className="space-y-8">
-              {/* AI 정보 추이 */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-white/80 font-medium">AI 정보 학습</span>
+            <div className="flex items-end gap-6 h-56 px-2 w-full min-w-[600px]">
+              {uniqueChartData.map((data, idx) => (
+                <div key={idx} className="flex flex-col items-center w-16 group">
+                  {/* AI 정보 bar */}
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: `${(data.ai_info / maxAI) * 120}` }}
+                    transition={{ duration: 0.7, type: 'spring' }}
+                    className="w-6 rounded-t-xl shadow-lg bg-gradient-to-t from-blue-500 to-cyan-300 mb-1 relative hover:scale-110 hover:z-10 transition-transform"
+                    style={{ height: `${(data.ai_info / maxAI) * 120}px` }}
+                  >
+                    {data.ai_info > 0 && (
+                      <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-blue-300 drop-shadow group-hover:scale-110 transition-transform">{data.ai_info}</span>
+                    )}
+                  </motion.div>
+                  {/* 용어 bar */}
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: `${(data.terms / maxTerms) * 120}` }}
+                    transition={{ duration: 0.7, type: 'spring', delay: 0.1 }}
+                    className="w-6 rounded-t-xl shadow-lg bg-gradient-to-t from-purple-500 to-pink-300 mb-1 relative hover:scale-110 hover:z-10 transition-transform"
+                    style={{ height: `${(data.terms / maxTerms) * 120}px` }}
+                  >
+                    {data.terms > 0 && (
+                      <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-pink-300 drop-shadow group-hover:scale-110 transition-transform">{data.terms}</span>
+                    )}
+                  </motion.div>
+                  {/* 퀴즈 bar */}
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: `${(data.quiz_score / maxQuiz) * 120}` }}
+                    transition={{ duration: 0.7, type: 'spring', delay: 0.2 }}
+                    className="w-6 rounded-t-xl shadow-lg bg-gradient-to-t from-green-500 to-emerald-300 relative hover:scale-110 hover:z-10 transition-transform"
+                    style={{ height: `${(data.quiz_score / maxQuiz) * 120}px` }}
+                  >
+                    {data.quiz_score > 0 && (
+                      <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-emerald-300 drop-shadow group-hover:scale-110 transition-transform">{data.quiz_score}%</span>
+                    )}
+                  </motion.div>
+                  {/* 날짜 */}
+                  <div className="mt-2 text-xs text-white/80 font-bold drop-shadow">
+                    {new Date(data.date).getDate()}
                   </div>
-                  <span className="text-white/60 text-sm">
-                    최대: {maxAI}개
-                  </span>
                 </div>
-                <div className="flex items-end gap-1 h-32">
-                  {uniqueChartData.map((data, index) => (
-                    <div key={index} className="flex-1 flex flex-col items-center">
-                      <div className="relative w-full">
-                        <div
-                          className="bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-sm transition-all duration-500 hover:from-blue-400 hover:to-blue-300"
-                          style={{ 
-                            height: `${(data.ai_info / maxAI) * 100}%`,
-                            minHeight: 0
-                          }}
-                        />
-                        {data.ai_info > 0 && (
-                          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-blue-400 font-medium">
-                            {data.ai_info}
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-xs text-white/50 mt-2 text-center">
-                        {new Date(data.date).getDate()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* 용어 학습 추이 */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                    <span className="text-white/80 font-medium">용어 학습</span>
-                  </div>
-                  <span className="text-white/60 text-sm">
-                    최대: {maxTerms}개
-                  </span>
-                </div>
-                <div className="flex items-end gap-1 h-32">
-                  {uniqueChartData.map((data, index) => (
-                    <div key={index} className="flex-1 flex flex-col items-center">
-                      <div className="relative w-full">
-                        <div
-                          className="bg-gradient-to-t from-purple-500 to-purple-400 rounded-t-sm transition-all duration-500 hover:from-purple-400 hover:to-purple-300"
-                          style={{ 
-                            height: `${(data.terms / maxTerms) * 100}%`,
-                            minHeight: 0
-                          }}
-                        />
-                        {data.terms > 0 && (
-                          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-purple-400 font-medium">
-                            {data.terms}
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-xs text-white/50 mt-2 text-center">
-                        {new Date(data.date).getDate()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* 퀴즈 점수 추이 */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-white/80 font-medium">퀴즈 점수</span>
-                  </div>
-                  <span className="text-white/60 text-sm">
-                    최대: {maxQuiz}%
-                  </span>
-                </div>
-                <div className="flex items-end gap-1 h-32">
-                  {uniqueChartData.map((data, index) => (
-                    <div key={index} className="flex-1 flex flex-col items-center">
-                      <div className="relative w-full">
-                        <div
-                          className="bg-gradient-to-t from-green-500 to-green-400 rounded-t-sm transition-all duration-500 hover:from-green-400 hover:to-green-300"
-                          style={{ 
-                            height: `${(data.quiz_score / maxQuiz) * 100}%`,
-                            minHeight: 0
-                          }}
-                        />
-                        {data.quiz_score > 0 && (
-                          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-green-400 font-medium">
-                            {data.quiz_score}%
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-xs text-white/50 mt-2 text-center">
-                        {new Date(data.date).getDate()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              ))}
             </div>
           ) : (
             <div className="text-center text-white/60 py-8">

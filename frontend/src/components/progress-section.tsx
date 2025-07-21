@@ -417,7 +417,7 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
         </motion.div>
       </div>
 
-      {/* 기간별 추이 그래프 */}
+      {/* 기간별 추이 그래프 - 스택형 bar chart로 완전 리뉴얼 */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h3 className="text-white font-semibold text-lg">기간별 학습 추이</h3>
@@ -425,55 +425,61 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
             {periodStats?.start_date} ~ {periodStats?.end_date}
           </div>
         </div>
-
-        {/* 고급스러운 그룹형 bar chart */}
         <div className="glass rounded-2xl p-6 overflow-x-auto">
           {uniqueChartData.length > 0 ? (
-            <div className="flex items-end gap-6 h-56 px-2 w-full min-w-[600px]">
-              {uniqueChartData.map((data, idx) => (
-                <div key={idx} className="flex flex-col items-center w-16 group">
-                  {/* AI 정보 bar */}
-                  <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: `${(data.ai_info / maxAI) * 120}` }}
-                    transition={{ duration: 0.7, type: 'spring' }}
-                    className="w-6 rounded-t-xl shadow-lg bg-gradient-to-t from-blue-500 to-cyan-300 mb-1 relative hover:scale-110 hover:z-10 transition-transform"
-                    style={{ height: `${(data.ai_info / maxAI) * 120}px` }}
-                  >
-                    {data.ai_info > 0 && (
-                      <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-blue-300 drop-shadow group-hover:scale-110 transition-transform">{data.ai_info}</span>
-                    )}
-                  </motion.div>
-                  {/* 용어 bar */}
-                  <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: `${(data.terms / maxTerms) * 120}` }}
-                    transition={{ duration: 0.7, type: 'spring', delay: 0.1 }}
-                    className="w-6 rounded-t-xl shadow-lg bg-gradient-to-t from-purple-500 to-pink-300 mb-1 relative hover:scale-110 hover:z-10 transition-transform"
-                    style={{ height: `${(data.terms / maxTerms) * 120}px` }}
-                  >
-                    {data.terms > 0 && (
-                      <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-pink-300 drop-shadow group-hover:scale-110 transition-transform">{data.terms}</span>
-                    )}
-                  </motion.div>
-                  {/* 퀴즈 bar */}
-                  <motion.div
-                    initial={{ height: 0 }}
-                    animate={{ height: `${(data.quiz_score / maxQuiz) * 120}` }}
-                    transition={{ duration: 0.7, type: 'spring', delay: 0.2 }}
-                    className="w-6 rounded-t-xl shadow-lg bg-gradient-to-t from-green-500 to-emerald-300 relative hover:scale-110 hover:z-10 transition-transform"
-                    style={{ height: `${(data.quiz_score / maxQuiz) * 120}px` }}
-                  >
-                    {data.quiz_score > 0 && (
-                      <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-emerald-300 drop-shadow group-hover:scale-110 transition-transform">{data.quiz_score}%</span>
-                    )}
-                  </motion.div>
-                  {/* 날짜 */}
-                  <div className="mt-2 text-xs text-white/80 font-bold drop-shadow">
-                    {new Date(data.date).getDate()}
+            <div className="flex items-end gap-6 h-64 px-2 w-full min-w-[600px]">
+              {uniqueChartData.map((data, idx) => {
+                // 오늘 날짜 강조
+                const isToday = data.date === new Date().toISOString().split('T')[0];
+                // 비율 계산
+                const aiRatio = data.ai_info / maxAI;
+                const termsRatio = data.terms / maxTerms;
+                const quizRatio = data.quiz_score / maxQuiz;
+                const totalRatio = Math.min(aiRatio + termsRatio + quizRatio, 1);
+                // 툴팁 내용
+                const tooltip = `AI: ${data.ai_info}/${maxAI}\n용어: ${data.terms}/${maxTerms}\n퀴즈: ${data.quiz_score}%`;
+                return (
+                  <div key={idx} className="flex flex-col items-center w-16 group relative">
+                    {/* 스택형 bar */}
+                    <div className={`relative flex flex-col justify-end w-10 h-48 rounded-2xl shadow-xl overflow-hidden border-2 ${isToday ? 'border-yellow-400' : 'border-white/10'} bg-white/10 group-hover:scale-105 transition-transform`}>
+                      {/* 퀴즈(맨 위) */}
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: `${quizRatio * 100}%` }}
+                        transition={{ duration: 0.7, type: 'spring', delay: 0.2 }}
+                        className="w-full bg-gradient-to-t from-green-500 to-emerald-300"
+                        style={{ height: `${quizRatio * 192}px` }}
+                      />
+                      {/* 용어 */}
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: `${termsRatio * 100}%` }}
+                        transition={{ duration: 0.7, type: 'spring', delay: 0.1 }}
+                        className="w-full bg-gradient-to-t from-purple-500 to-pink-300"
+                        style={{ height: `${termsRatio * 192}px` }}
+                      />
+                      {/* AI */}
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: `${aiRatio * 100}%` }}
+                        transition={{ duration: 0.7, type: 'spring' }}
+                        className="w-full bg-gradient-to-t from-blue-500 to-cyan-300"
+                        style={{ height: `${aiRatio * 192}px` }}
+                      />
+                      {/* 툴팁 */}
+                      <div className="absolute left-1/2 -translate-x-1/2 -top-16 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20 w-40 bg-black/90 text-white text-xs rounded-lg px-3 py-2 shadow-xl whitespace-pre text-center">
+                        {tooltip}
+                      </div>
+                      {/* bar 위에 총합/비율 */}
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-sm font-bold text-white drop-shadow-lg">
+                        {Math.round(totalRatio * 100)}%
+                      </div>
+                    </div>
+                    {/* 날짜 */}
+                    <div className={`mt-3 text-xs font-bold ${isToday ? 'text-yellow-400' : 'text-white/80'} drop-shadow`}>{new Date(data.date).getDate()}</div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="text-center text-white/60 py-8">

@@ -452,12 +452,12 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                     최대: {maxAI}개
                   </span>
                 </div>
-                <div className="flex items-end gap-1 h-32">
+                <div className="flex items-end gap-2 h-32">
                   {uniqueChartData.map((data, index) => {
                     const percent = Math.round((data.ai_info / maxAI) * 100);
                     const isFull = data.ai_info === maxAI;
                     return (
-                      <div key={index} className="flex-1 flex flex-col items-center">
+                      <div key={index} className="flex flex-col items-center w-8">
                         <div className="relative w-full">
                           <div
                             className={
@@ -467,7 +467,8 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                             }
                             style={{
                               height: `${percent}%`,
-                              minHeight: 0
+                              minHeight: data.ai_info > 0 ? 4 : 0,
+                              width: "100%"
                             }}
                           />
                         </div>

@@ -481,7 +481,7 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                               {/* bar 위에 % */}
                               {data.ai_info > 0 && (
                                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-blue-200 drop-shadow">
-                                  {percent}%
+                                  {percent === 100 ? '100% (완료)' : `${percent}%`}
                                 </div>
                               )}
                             </div>
@@ -540,7 +540,7 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                               {/* bar 위에 % */}
                               {data.terms > 0 && (
                                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-pink-200 drop-shadow">
-                                  {percent}%
+                                  {percent === 100 ? '100% (완료)' : `${percent}%`}
                                 </div>
                               )}
                             </div>
@@ -599,7 +599,7 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
                               {/* bar 위에 % */}
                               {data.quiz_score > 0 && (
                                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-green-200 drop-shadow">
-                                  {percent}%
+                                  {percent === 100 ? '100% (완료)' : `${percent}%`}
                                 </div>
                               )}
                             </div>

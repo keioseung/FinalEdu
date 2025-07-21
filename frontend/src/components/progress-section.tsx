@@ -417,7 +417,7 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
         </motion.div>
       </div>
 
-      {/* 기간별 추이 그래프 - 혼합형(막대+선) 그래프 */}
+      {/* 기간별 추이 그래프 - 기본 bar chart 복원 */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h3 className="text-white font-semibold text-lg">기간별 학습 추이</h3>
@@ -425,69 +425,116 @@ function ProgressSection({ sessionId, selectedDate, onDateChange }: ProgressSect
             {periodStats?.start_date} ~ {periodStats?.end_date}
           </div>
         </div>
-        <div className="glass rounded-2xl p-6 overflow-x-auto scrollbar-thin scrollbar-thumb-blue-400/30 scrollbar-track-transparent">
+        <div className="glass rounded-2xl p-6">
           {uniqueChartData.length > 0 ? (
-            <div className="relative flex items-end h-72 min-w-[600px] w-fit px-6">
-              {/* y축 라벨 */}
-              <div className="absolute left-0 top-0 h-full flex flex-col justify-between z-10 -ml-8 text-xs text-white/40 select-none pointer-events-none">
-                {[100,80,60,40,20,0].map(v=>(<div key={v} style={{height:'60px'}}>{v}%</div>))}
-              </div>
-              {/* SVG 선(line) */}
-              <svg className="absolute left-0 top-0 w-full h-64 pointer-events-none z-0" style={{minWidth: uniqueChartData.length * 64}}>
-                <polyline
-                  fill="none"
-                  stroke="#34d399"
-                  strokeWidth="3"
-                  strokeLinejoin="round"
-                  points={uniqueChartData.map((d, idx) => `${56 + idx*64},${192-(d.quiz_score/100)*192}`).join(' ')}
-                  style={{filter:'drop-shadow(0 2px 8px #34d39988)'}}
-                />
-              </svg>
-              {/* 막대(bar) + 선(circle) */}
-              {uniqueChartData.map((data, idx) => {
-                const isToday = data.date === new Date().toISOString().split('T')[0];
-                const totalLearned = (data.ai_info + data.terms);
-                const barPercent = Math.min((totalLearned/63)*100, 100);
-                const quizPercent = Math.min(data.quiz_score, 100);
-                const barHeight = (barPercent/100)*192;
-                const lineY = 192-(quizPercent/100)*192;
-                return (
-                  <div key={idx} className="flex flex-col items-center w-16 relative z-10 group">
-                    {/* bar */}
-                    <div className="relative flex flex-col items-center justify-end h-48 w-8">
-                      <motion.div
-                        initial={{ height: 0 }}
-                        animate={{ height: barHeight }}
-                        transition={{ duration: 0.7, type: 'spring' }}
-                        className={`w-8 rounded-t-xl shadow-lg bg-gradient-to-t from-blue-500 to-purple-400 ${isToday ? 'ring-4 ring-yellow-300' : ''}`}
-                        style={{ height: barHeight }}
-                      />
-                      {/* bar 위에 % */}
-                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-xs font-bold text-blue-100 drop-shadow-lg">
-                        {Math.round(barPercent)}%
+            <div className="space-y-8">
+              {/* AI 정보 추이 */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="text-white/80 font-medium">AI 정보 학습</span>
+                  </div>
+                  <span className="text-white/60 text-sm">
+                    최대: {maxAI}개
+                  </span>
+                </div>
+                <div className="flex items-end gap-1 h-32">
+                  {uniqueChartData.map((data, index) => (
+                    <div key={index} className="flex-1 flex flex-col items-center">
+                      <div className="relative w-full">
+                        <div
+                          className="bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-sm transition-all duration-500 hover:from-blue-400 hover:to-blue-300"
+                          style={{ 
+                            height: `${(data.ai_info / maxAI) * 100}%`,
+                            minHeight: 0
+                          }}
+                        />
+                        {data.ai_info > 0 && (
+                          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-blue-400 font-medium">
+                            {data.ai_info}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-xs text-white/50 mt-2 text-center">
+                        {new Date(data.date).getDate()}
                       </div>
                     </div>
-                    {/* 선(circle) + 툴팁 */}
-                    <svg className="absolute top-0 left-0 w-full h-48 pointer-events-none z-20" style={{minWidth:'100%'}}>
-                      <circle
-                        cx="16"
-                        cy={lineY}
-                        r={isToday ? 8 : 6}
-                        fill={isToday ? '#facc15' : '#34d399'}
-                        stroke="#fff"
-                        strokeWidth={isToday ? 4 : 2}
-                        style={{filter:isToday?'drop-shadow(0 0 12px #fde047)':'drop-shadow(0 2px 8px #34d39988)'}}
-                      />
-                    </svg>
-                    {/* 퀴즈 점수 툴팁 */}
-                    <div className="absolute left-1/2 -translate-x-1/2 -top-16 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-opacity z-30 w-32 bg-black/90 text-white text-xs rounded-lg px-3 py-2 shadow-xl whitespace-pre text-center">
-                      퀴즈 점수: {quizPercent}%
-                    </div>
-                    {/* 날짜 */}
-                    <div className={`mt-3 text-xs font-bold ${isToday ? 'text-yellow-400' : 'text-white/80'} drop-shadow`}>{new Date(data.date).getDate()}</div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 용어 학습 추이 */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                    <span className="text-white/80 font-medium">용어 학습</span>
                   </div>
-                );
-              })}
+                  <span className="text-white/60 text-sm">
+                    최대: {maxTerms}개
+                  </span>
+                </div>
+                <div className="flex items-end gap-1 h-32">
+                  {uniqueChartData.map((data, index) => (
+                    <div key={index} className="flex-1 flex flex-col items-center">
+                      <div className="relative w-full">
+                        <div
+                          className="bg-gradient-to-t from-purple-500 to-purple-400 rounded-t-sm transition-all duration-500 hover:from-purple-400 hover:to-purple-300"
+                          style={{ 
+                            height: `${(data.terms / maxTerms) * 100}%`,
+                            minHeight: 0
+                          }}
+                        />
+                        {data.terms > 0 && (
+                          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-purple-400 font-medium">
+                            {data.terms}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-xs text-white/50 mt-2 text-center">
+                        {new Date(data.date).getDate()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 퀴즈 점수 추이 */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-white/80 font-medium">퀴즈 점수</span>
+                  </div>
+                  <span className="text-white/60 text-sm">
+                    최대: {maxQuiz}%
+                  </span>
+                </div>
+                <div className="flex items-end gap-1 h-32">
+                  {uniqueChartData.map((data, index) => (
+                    <div key={index} className="flex-1 flex flex-col items-center">
+                      <div className="relative w-full">
+                        <div
+                          className="bg-gradient-to-t from-green-500 to-green-400 rounded-t-sm transition-all duration-500 hover:from-green-400 hover:to-green-300"
+                          style={{ 
+                            height: `${(data.quiz_score / maxQuiz) * 100}%`,
+                            minHeight: 0
+                          }}
+                        />
+                        {data.quiz_score > 0 && (
+                          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-xs text-green-400 font-medium">
+                            {data.quiz_score}%
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-xs text-white/50 mt-2 text-center">
+                        {new Date(data.date).getDate()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           ) : (
             <div className="text-center text-white/60 py-8">
